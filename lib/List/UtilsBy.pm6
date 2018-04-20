@@ -195,13 +195,6 @@ the effect of a scalar context can be achieved by prefixing C<+> to the
 result, which would effectively return the number of elements in the result,
 which usually is the same as the scalar context of Perl 5 of these functions.
 
-Perl 6 does not have a magic C<$a> and C<$b>.  But they can be made to exist
-by specifying the correct signature to blocks, specifically "-> $a, $b".
-These have been used in all examples that needed them.  Just using the
-signature auto-generating C<$^a> and C<$^b> would be more Perl 6 like.  But
-since we want to keep the documentation as close to the original as possible,
-it was decided to specifically specify the "-> $a, $b" signatures.
-
 Many functions take a C<&code> parameter of a C<Block> to be called by the
 function.  Many of these assume B<$_> will be set.  In Perl 6, this happens
 automagically if you create a block without a definite or implicit signature:
@@ -209,7 +202,11 @@ automagically if you create a block without a definite or implicit signature:
   say { $_ == 4 }.signature;   # (;; $_? is raw)
 
 which indicates the Block takes an optional parameter that will be aliased
-as C<$_> inside the Block.
+as C<$_> inside the Block.  If you want to be able to change C<$_> inside
+the block B<without> changing the source array, you can use the C<is copy>
+trait thus:
+
+  -> $_ is copy { ... code changing $_ ... }
 
 Perl 6 also doesn't have a single C<undef> value, but instead has
 C<Type Objects>, which could be considered undef values, but with a type
@@ -218,30 +215,6 @@ of a value where there should have been one) is used instead of C<undef>.
 
 Also note there are no special parsing rules with regards to blocks in Perl 6.
 So a comma is B<always> required after having specified a block.
-
-The following functions are actually built-ins in Perl 6.
-
-  any all none minmax uniq zip
-
-They mostly provide the same or similar semantics, but there may be subtle
-differences, so it was decided to not just use the built-ins.  If these
-functions are imported from this library in a scope, they will used instead
-of the Perl 6 builtins.  The easiest way to use both the functions of this
-library and the Perl 6 builtins in the same scope, is to use the method syntax
-for the Perl 6 versions.
-
-    my @a = 42,5,2,98792,88;
-    {  # Note: imports in Perl 6 are always lexically scoped
-        use List::Util <minmax>;
-        say minmax @a;  # Ported Perl 5 version
-        say @a.minmax;  # Perl 6 version
-    }
-    say minmax @a;  # Perl 6 version again
-
-Many functions returns either C<True> or C<False>.  These are C<Bool>ean
-objects in Perl 6, rather than just C<0> or C<1>.  However, if you use
-a Boolean value in a numeric context, they are silently coerced to 0 and 1.
-So you can still use them in numeric calculations as if they are 0 and 1.
 
 Some functions return something different in scalar context than in list
 context.  Perl 6 doesn't have those concepts.  Functions that are supposed
@@ -281,11 +254,140 @@ them in the correct order.
 
 =head2 nsort_by BLOCK, LIST
 
-Similar to C<sort_by> but compares its key values numerically.
+Similar to C</sort_by> but compares its key values numerically.
 
 =head3 Idiomatic Perl 6 ways
 
     my @sorted = <10 1 20 42>.sort: +*;
+
+=head2 rev_sort_by BLOCK, LIST
+
+=head2 rev_nsort_by BLOCK, LIST
+
+    my @sorted = rev_sort_by { KEYFUNC }, @vals;
+
+    my @sorted = rev_nsort_by { KEYFUNC }, @vals;
+
+    Similar to L<sort_by> and L<nsort_by> but returns the list in the reversei
+    order.
+
+=head2 max_by BLOCK, LIST
+
+    my @optimal = max_by { KEYFUNC }, @vals;
+
+    my $optimal = max_by { KEYFUNC }, @vals, :scalar;
+
+Returns the (first) value(s) from C<@vals> that give the numerically largest
+result from the key function.
+
+    my $tallest = max_by { $_->height }, @people, :scalar;
+
+    my $newest = max_by { .IO.modified }, @files, :scalar;
+
+If the C<:scalar> named parameter is specified, then only the first maximal
+value is returned. Otherwise a list of all the maximal values is returned.
+This may be used to obtain positions other than the first, if order is
+significant.
+
+If called on an empty list, an empty list is returned.
+
+For symmetry with the L</nsort_by> function, this is also provided under the
+name C<nmax_by> since it behaves numerically.
+
+=head2 min_by BLOCK, LIST
+
+    my @optimal = min_by { KEYFUNC }, @vals;
+
+    my $optimal = min_by { KEYFUNC }, @vals, :scalar;
+
+Similar to L</max_by> but returns values which give the numerically smallest
+result from the key function. Also provided as C<nmin_by>
+
+=head2 minmax_by
+
+    my ($minimal, $maximal) = minmax_by { KEYFUNC }, @vals
+
+Similar to calling both L</min_by> and L</max_by> with the same key function
+on the same list. This version is more efficient than calling the two other
+functions individually, as it has less work to perform overall. Also provided
+as C<nminmax_by>.
+
+=head2 uniq_by BLOCK, LIST
+
+    my @unique = uniq_by { KEYFUNC }, @vals;
+
+Returns a list of the subset of values for which the key function block
+returns unique values. The first value yielding a particular key is chosen,
+subsequent values are rejected.
+
+    my @some_fruit = uniq_by { $_->colour }, @fruit;
+
+To select instead the last value per key, reverse the input list. If the order
+of the results is significant, don't forget to reverse the result as well:
+
+    my @some_fruit = reverse uniq_by { $_->colour }, reverse @fruit;
+
+Because the values returned by the key function are used as hash keys, they
+ought to either be strings, or at least stringify in an identifying manner.
+
+=head2 partition_by BLOCK, LIST
+
+    my %parts = partition_by { KEYFUNC }, @vals;
+
+Returns a Hash of Arrays containing all the original values distributed
+according to the result of the key function block. Each value will be an
+Array containing all the values which returned the string from the
+key function, in their original order.
+
+   my %balls_by_colour = partition_by { $_->colour }, @balls;
+
+Because the values returned by the key function are used as hash keys, they
+ought to either be strings, or at least stringify in an identifying manner.
+
+=head2 count_by BLOCK, LIST
+
+    my %counts = count_by { KEYFUNC }, @vals;
+
+Returns a Hash giving the number of times the key function block returned
+the key, for each value in the list.
+
+   my %count_of_balls = count_by { $_->colour }, @balls;
+
+Because the values returned by the key function are used as hash keys, they
+ought to either be strings, or at least stringify in an identifying manner.
+
+=head2 zip_by BLOCK, ARRAYS
+
+    my @vals = zip_by { ITEMFUNC }, @arr0, @arr1, @arr2, ... ;
+
+Returns a list of each of the values returned by the function block, when
+invoked with values from across each each of the given Arrays. Each value
+in the returned list will be the result of the function having been
+invoked with arguments at that position, from across each of the arrays given.
+
+   my @transposition = zip_by { [ @_ ] }, @matrix;
+
+   my @names = zip_by { "$_[1], $_[0]" }, @firstnames, @surnames;
+
+   print zip_by { "$_[0] => $_[1]\n" }, %hash.keys, %hash.values;
+
+If some of the arrays are shorter than others, the function will behave as if
+they had C<Any> in the trailing positions. The following two lines are
+equivalent:
+
+   zip_by { f(@_) }, [ 1, 2, 3 ], [ "a", "b" ];
+   f( 1, "a" ), f( 2, "b" ), f( 3, Any );
+
+If the item function returns a list, and you want to have the separate entries
+of that list to be included in the result, you need to return that slip that
+list.. This can be useful for example, for generating a hash from two separate
+lists of keys and values:
+
+    my %nums = zip_by { |@_ }, <one two three>, (1, 2, 3);
+    # %nums = ( one => 1, two => 2, three => 3 )
+
+(A function having this behaviour is sometimes called C<zipWith>, e.g. in
+Haskell, but that name would not fit the naming scheme used by this module).
 
 =head1 AUTHOR
 
