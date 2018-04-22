@@ -131,12 +131,12 @@ class List::UtilsBy:ver<0.0.1>:auth<cpan:ELIZABETH> {
         @extract_by
     }
 
-    our sub extract_first_by(&code, @values) is export(:all) {
+    our sub extract_first_by(&code, @values, :$scalar) is export(:all) {
         with @values.first(&code, :k) {
             @values.splice($_,1).head
         }
         else {
-            ()
+            $scalar ?? Nil !! ()
         }
     }
 
@@ -264,18 +264,18 @@ Similar to C</sort_by> but compares its key values numerically.
 
 =head2 rev_nsort_by BLOCK, LIST
 
-    my @sorted = rev_sort_by { KEYFUNC }, @vals;
+    my @sorted = rev_sort_by { KEYFUNC }, @values;
 
-    my @sorted = rev_nsort_by { KEYFUNC }, @vals;
+    my @sorted = rev_nsort_by { KEYFUNC }, @values;
 
     Similar to L<sort_by> and L<nsort_by> but returns the list in the reversei
     order.
 
 =head2 max_by BLOCK, LIST
 
-    my @optimal = max_by { KEYFUNC }, @vals;
+    my @optimal = max_by { KEYFUNC }, @values;
 
-    my $optimal = max_by { KEYFUNC }, @vals, :scalar;
+    my $optimal = max_by { KEYFUNC }, @values, :scalar;
 
 Returns the (first) value(s) from C<@vals> that give the numerically largest
 result from the key function.
@@ -294,27 +294,43 @@ If called on an empty list, an empty list is returned.
 For symmetry with the L</nsort_by> function, this is also provided under the
 name C<nmax_by> since it behaves numerically.
 
+=head3 Idiomatic Perl 6 ways
+
+    my @tallest = @people.max( *.height );       # all tallest people
+
+    my $tallest = @people.max( *.height ).head;  # only the first
+
 =head2 min_by BLOCK, LIST
 
-    my @optimal = min_by { KEYFUNC }, @vals;
+    my @optimal = min_by { KEYFUNC }, @values;
 
-    my $optimal = min_by { KEYFUNC }, @vals, :scalar;
+    my $optimal = min_by { KEYFUNC }, @values, :scalar;
 
 Similar to L</max_by> but returns values which give the numerically smallest
 result from the key function. Also provided as C<nmin_by>
 
+=head3 Idiomatic Perl 6 ways
+
+    my @smallest = @people.min: *.height;       # all smallest people
+
+    my $smallest = @people.min( *.height ).head;  # only the first
+
 =head2 minmax_by
 
-    my ($minimal, $maximal) = minmax_by { KEYFUNC }, @vals
+    my ($minimal, $maximal) = minmax_by { KEYFUNC }, @values;
 
 Similar to calling both L</min_by> and L</max_by> with the same key function
 on the same list. This version is more efficient than calling the two other
 functions individually, as it has less work to perform overall. Also provided
 as C<nminmax_by>.
 
+=head3 Idiomatic Perl 6 ways
+
+    my ($smallest,$tallest) = @people.minmax: *.height;
+
 =head2 uniq_by BLOCK, LIST
 
-    my @unique = uniq_by { KEYFUNC }, @vals;
+    my @unique = uniq_by { KEYFUNC }, @values;
 
 Returns a list of the subset of values for which the key function block
 returns unique values. The first value yielding a particular key is chosen,
@@ -330,9 +346,13 @@ of the results is significant, don't forget to reverse the result as well:
 Because the values returned by the key function are used as hash keys, they
 ought to either be strings, or at least stringify in an identifying manner.
 
+=head3 Idiomatic Perl 6 ways
+
+    my @some_fruit = @fruit.uniq: *.colour;
+
 =head2 partition_by BLOCK, LIST
 
-    my %parts = partition_by { KEYFUNC }, @vals;
+    my %parts = partition_by { KEYFUNC }, @values;
 
 Returns a Hash of Arrays containing all the original values distributed
 according to the result of the key function block. Each value will be an
@@ -344,17 +364,25 @@ key function, in their original order.
 Because the values returned by the key function are used as hash keys, they
 ought to either be strings, or at least stringify in an identifying manner.
 
+=head3 Idiomatic Perl 6 ways
+
+   my %balls_by_colour = @balls.classify: *.colour;
+
 =head2 count_by BLOCK, LIST
 
-    my %counts = count_by { KEYFUNC }, @vals;
+    my %counts = count_by { KEYFUNC }, @values;
 
 Returns a Hash giving the number of times the key function block returned
 the key, for each value in the list.
 
-   my %count_of_balls = count_by { $_->colour }, @balls;
+    my %count_of_balls = count_by { $_->colour }, @balls;
 
 Because the values returned by the key function are used as hash keys, they
 ought to either be strings, or at least stringify in an identifying manner.
+
+=head3 Idiomatic Perl 6 ways
+
+    my %count_of_balls = @balls.map( *.colour ).Bag;
 
 =head2 zip_by BLOCK, ARRAYS
 
@@ -380,7 +408,7 @@ equivalent:
 
 If the item function returns a list, and you want to have the separate entries
 of that list to be included in the result, you need to return that slip that
-list.. This can be useful for example, for generating a hash from two separate
+list. This can be useful for example, for generating a hash from two separate
 lists of keys and values:
 
     my %nums = zip_by { |@_ }, <one two three>, (1, 2, 3);
@@ -388,6 +416,90 @@ lists of keys and values:
 
 (A function having this behaviour is sometimes called C<zipWith>, e.g. in
 Haskell, but that name would not fit the naming scheme used by this module).
+
+=head3 Idiomatic Perl 6 ways
+
+    my @names = zip @firstnames, @surnames, :with({ "$^b, $^a" });
+
+    zip [1,2,3], [<a b>], :with(&f);
+
+    my %nums = zip <one two three>, (1, 2, 3);
+
+=head2 unzip_by BLOCK, LIST
+
+   my (@arr0, @arr1, @arr2, ...) = unzip_by { ITEMFUNC }, @vals
+
+Returns a list of Arrays containing the values returned by the function block,
+when invoked for each of the values given in the input list.  Each of the
+returned Arrays will contain the values returned at that corresponding
+position by the function block. That is, the first returned Array will contain
+all the values returned in the first position by the function block, the
+second will contain all the values from the second position, and so on.
+
+    my (@firstnames, @lastnames) = unzip_by { .split(" ",2) }, @names;
+
+If the function returns lists of differing lengths, the result will be padded
+with C<Any> in the missing elements.
+
+This function is an inverse of L</zip_by>, if given a corresponding inverse
+function.
+
+=head2 extract_by BLOCK, ARRAY
+
+    my @vals = extract_by { SELECTFUNC }, @array;
+
+Removes elements from the referenced array on which the selection function
+returns true, and returns a list containing those elements. This function is
+similar to C<grep>, except that it modifies the referenced array to remove the
+selected values from it, leaving only the unselected ones.
+
+    my @red_balls = extract_by { .color eq "red" }, @balls;
+    # Now there are no red balls in the @balls array
+
+This function modifies a real array, unlike most of the other functions in this
+module. Because of this, it requires a real array, not just a list.
+
+This function is implemented by invoking C<splice> on the array, not by
+constructing a new list and assigning it.
+
+=head2 extract_first_by BLOCK, ARRAY
+
+    my $value = extract_first_by { SELECTFUNC }, @array;
+
+A hybrid between L</extract_by> and C<List::Util::first>. Removes the first
+element from the referenced array on which the selection function returns
+true, returning it.
+
+As with L</extract_by>, this function requires a real array and not just a
+list, and is also implemented using C<splice>.
+
+If this function fails to find a matching element, it will return an empty
+list unless called with the C<:scalar> named parameter: in that case it will
+return C<Nil>.
+
+=head2 weighted_shuffle_by BLOCK, LIST
+
+    my @shuffled = weighted_shuffle_by { WEIGHTFUNC }, @values;
+
+Returns the list of values shuffled into a random order. The randomisation is
+not uniform, but weighted by the value returned by the C<WEIGHTFUNC>. The
+probability of each item being returned first will be distributed with the
+distribution of the weights, and so on recursively for the remaining items.
+
+=head2 bundle_by BLOCK, NUMBER, LIST
+
+    my @bundled = bundle_by { BLOCKFUNC }, $number, @values;
+
+Similar to a regular C<map> functional, returns a list of the values returned
+by C<BLOCKFUNC>. Values from the input list are given to the block function in
+bundles of C<$number>.
+
+If given a list of values whose length does not evenly divide by C<$number>,
+the final call will be passed fewer elements than the others.
+
+=head3 Idiomatic Perl 6 ways
+
+    my @bundled = @values.map( *.foo ).batch(3);
 
 =head1 AUTHOR
 
