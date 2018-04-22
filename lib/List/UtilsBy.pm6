@@ -1,7 +1,7 @@
 use v6.c;
 
 class List::UtilsBy:ver<0.0.1>:auth<cpan:ELIZABETH> {
-    our sub max_by(&code, @values, :$scalar) is export(:all) {
+    our sub max_by(&code, *@values, :$scalar) is export(:all) {
         my $max = -Inf;
         my @max-value is default(Nil);
         for @values -> $value {
@@ -19,7 +19,7 @@ class List::UtilsBy:ver<0.0.1>:auth<cpan:ELIZABETH> {
     }
     our constant &nmax_by is export(:all) = &max_by;
 
-    our sub min_by(&code, @values, :$scalar) is export(:all) {
+    our sub min_by(&code, *@values, :$scalar) is export(:all) {
         my $min = Inf;
         my @min-value is default(Nil);
         for @values -> $value {
@@ -37,55 +37,60 @@ class List::UtilsBy:ver<0.0.1>:auth<cpan:ELIZABETH> {
     }
     our constant &nmin_by is export(:all) = &min_by;
 
-    our sub minmax_by(&code, @values) is export(:all) {
+    our sub minmax_by(&code, *@values) is export(:all) {
         my $max = -Inf;
         my $min = Inf;
         my $max-value is default(Nil);
         my $min-value is default(Nil);
-        for @values -> $value {
-            with code($value) {
-                if $_ < $min {
-                    $min = $_;
-                    $min-value = $value;
-                }
-                elsif $_ > $max {
-                    $max = $_;
-                    $max-value = $value;
+        if @values > 1 {
+            for @values -> $value {
+                with code($value) {
+                    if $_ < $min {
+                        $min = $_;
+                        $min-value = $value;
+                    }
+                    if $_ > $max {
+                        $max = $_;
+                        $max-value = $value;
+                    }
                 }
             }
+            ($min-value,$max-value)
         }
-        ($min-value,$max-value)
+        else {
+            @values ?? (@values[0],@values[0]) !! ()
+        }
     }
     our constant &nminmax_by is export(:all) = &minmax_by;
 
-    our sub rev_nsort_by(&code, @values) is export(:all) {
+    our sub rev_nsort_by(&code, *@values) is export(:all) {
         # Please note that reversing the result of the sort just means that
         # it uses an iterator that walks back from the end of the reified
         # list, rather than creating a reversed copy of the List.
         @values.sort( { +code($_) } ).reverse.List
     }
 
-    our sub rev_sort_by(&code, @values) is export(:all) {
+    our sub rev_sort_by(&code, *@values) is export(:all) {
         @values.sort( { ~code($_) } ).reverse.List
     }
 
-    our sub sort_by(&code, @values) is export(:all) {
+    our sub sort_by(&code, *@values) is export(:all) {
         @values.sort( { ~code($_) } ).List
     }
 
-    our sub nsort_by(&code, @values) is export(:all) {
+    our sub nsort_by(&code, *@values) is export(:all) {
         @values.sort( { +code($_) } ).List
     }
 
-    our sub uniq_by(&code, @values) is export(:all) {
-        @values.unique( { ~code($_) } ).List
+    our sub uniq_by(&code, *@values) is export(:all) {
+        @values.unique( :as({ ~code($_) }) ).List
     }
 
-    our sub partition_by(&code, @values) is export(:all) {
+    our sub partition_by(&code, *@values) is export(:all) {
         @values.classify( { ~code($_) }, :into(my %) )
     }
 
-    our sub count_by(&code, @values) is export(:all) {
+    our sub count_by(&code, *@values) is export(:all) {
         my %count_by;
         ++%count_by{ code($_) } for @values;
         %count_by
@@ -114,7 +119,7 @@ class List::UtilsBy:ver<0.0.1>:auth<cpan:ELIZABETH> {
         @zip_by
     }
 
-    our sub unzip_by(&code, @values) is export(:all) {
+    our sub unzip_by(&code, *@values) is export(:all) {
         my @unzip_by;
         for @values.kv -> $result, $_ {
             for code($_).kv -> $index, \value {
@@ -140,7 +145,7 @@ class List::UtilsBy:ver<0.0.1>:auth<cpan:ELIZABETH> {
         }
     }
 
-    our sub weighted_shuffly_by(&code, @values) is export(:all) {
+    our sub weighted_shuffly_by(&code, *@values) is export(:all) {
         my @weighted_shuffle_by;
         my $mix = MixHash.new( @values.map( { $_ => code($_) } ) );
         while $mix {
@@ -149,7 +154,7 @@ class List::UtilsBy:ver<0.0.1>:auth<cpan:ELIZABETH> {
         @weighted_shuffle_by
     }
 
-    our sub bundle_by(&code, $number, @values) is export(:all) {
+    our sub bundle_by(&code, $number, *@values) is export(:all) {
         @values.map(&code).batch($number).List
     }
 }
