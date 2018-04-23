@@ -145,13 +145,16 @@ class List::UtilsBy:ver<0.0.1>:auth<cpan:ELIZABETH> {
         }
     }
 
-    our sub weighted_shuffly_by(&code, *@values) is export(:all) {
-        my @weighted_shuffle_by;
-        my $mix = MixHash.new( @values.map( { $_ => code($_) } ) );
-        while $mix {
-            @weighted_shuffle_by.push( $mix{$mix.pick}:delete )
+    our sub weighted_shuffle_by(&code, *@values) is export(:all) {
+        if @values {
+            my @weighted_shuffle_by;
+            my $mix = @values.map( { $_ => code($_) } ).MixHash;
+            @weighted_shuffle_by.push( $mix{$mix.roll}:delete:k ) while $mix;
+            @weighted_shuffle_by
         }
-        @weighted_shuffle_by
+        else {
+            ()
+        }
     }
 
     our sub bundle_by(&code, $number, *@values) is export(:all) {
