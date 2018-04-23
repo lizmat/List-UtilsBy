@@ -97,36 +97,46 @@ class List::UtilsBy:ver<0.0.1>:auth<cpan:ELIZABETH> {
     }
 
     our sub zip_by(&code, **@arrays) is export(:all) {
-        my @iterators = @arrays.map: *.iterator;
-        my $nr_values = +@iterators;
-        my @zip_by;
+        if @arrays {
+            my @iterators = @arrays.map: *.iterator;
+            my $nr_values = +@iterators;
+            my @zip_by;
 
-        loop {
-            my $seen = $nr_values;
-            my @values = @iterators.map: {
-                my $pulled := .pull-one;
-                if $pulled =:= IterationEnd {
-                    --$seen;
-                    Nil
+            loop {
+                my $seen = $nr_values;
+                my @values = @iterators.map: {
+                    my $pulled := .pull-one;
+                    if $pulled =:= IterationEnd {
+                        --$seen;
+                        Nil
+                    }
+                    else {
+                        $pulled
+                    }
                 }
-                else {
-                    $pulled
-                }
+                last unless $seen;
+                @zip_by.push( code(@values) )
             }
-            last unless $seen;
-            @zip_by.append( code(|@values).Slip )
+            @zip_by
         }
-        @zip_by
+        else {
+            ()
+        }
     }
 
     our sub unzip_by(&code, *@values) is export(:all) {
-        my @unzip_by;
-        for @values.kv -> $result, $_ {
-            for code($_).kv -> $index, \value {
-                @unzip_by[$index][$result] = value
+        if @values {
+            my @unzip_by;
+            for @values.kv -> $result, $_ {
+                for code($_).kv -> $index, \value {
+                    @unzip_by[$index][$result] = value
+                }
             }
+            @unzip_by
         }
-        @unzip_by
+        else {
+            ()
+        }
     }
 
     our sub extract_by(&code, @values) is export(:all) {
@@ -158,7 +168,7 @@ class List::UtilsBy:ver<0.0.1>:auth<cpan:ELIZABETH> {
     }
 
     our sub bundle_by(&code, $number, *@values) is export(:all) {
-        @values.map(&code).batch($number).List
+        @values.batch($number).map( -> *@_ { code(|@_) } ).List
     }
 }
 
@@ -507,7 +517,7 @@ the final call will be passed fewer elements than the others.
 
 =head3 Idiomatic Perl 6 ways
 
-    my @bundled = @values.map( *.foo ).batch(3);
+    my @bundled = @values.batch(3).map: -> @_ { ... };
 
 =head1 AUTHOR
 
