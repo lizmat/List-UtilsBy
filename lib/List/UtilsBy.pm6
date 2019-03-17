@@ -1,7 +1,16 @@
 use v6.c;
 
-module List::UtilsBy:ver<0.0.2>:auth<cpan:ELIZABETH> {
-    our sub max_by(&code, *@values, :$scalar) is export(:all) {
+module List::UtilsBy:ver<0.0.3>:auth<cpan:ELIZABETH> {
+    our proto sub max_by(|) is export(:all) {*}
+    multi sub max_by(Scalar:U, &code, *@values) {
+        _max_by(&code, @values)[0]
+    }
+    multi sub max_by(&code, *@values, :$scalar)
+      is DEPRECATED('Scalar as first positional')
+    {
+        $scalar ?? _max_by(&code, @values)[0] !! _max_by(&code, @values)
+    }
+    sub _max_by(&code, @values) {
         my $max = -Inf;
         my @max-value is default(Nil);
         for @values -> $value {
@@ -15,11 +24,20 @@ module List::UtilsBy:ver<0.0.2>:auth<cpan:ELIZABETH> {
                 }
             }
         }
-        $scalar ?? @max-value[0] !! @max-value;
+        @max-value
     }
     our constant &nmax_by is export(:all) = &max_by;
 
-    our sub min_by(&code, *@values, :$scalar) is export(:all) {
+    our proto sub min_by(|) is export(:all) {*}
+    multi sub min_by(Scalar:U, &code, *@values) {
+        _min_by(&code, @values)[0]
+    }
+    multi sub min_by(&code, *@values, :$scalar)
+      is DEPRECATED('Scalar as first positional')
+    {
+        $scalar ?? _min_by(&code, @values)[0] !! _min_by(&code, @values)
+    }
+    sub _min_by(&code, @values) {
         my $min = Inf;
         my @min-value is default(Nil);
         for @values -> $value {
@@ -33,7 +51,7 @@ module List::UtilsBy:ver<0.0.2>:auth<cpan:ELIZABETH> {
                 }
             }
         }
-        $scalar ?? @min-value[0] !! @min-value;
+        @min-value
     }
     our constant &nmin_by is export(:all) = &min_by;
 
@@ -146,7 +164,16 @@ module List::UtilsBy:ver<0.0.2>:auth<cpan:ELIZABETH> {
         @extract_by
     }
 
-    our sub extract_first_by(&code, @values, :$scalar) is export(:all) {
+    our proto sub extract_first_by(|) is export(:all) {*}
+    multi sub extract_first_by(Scalar:U, &code, @values) {
+        _extract_first_by(True, &code, @values)
+    }
+    multi sub extract_first_by(&code, @values, :$scalar)
+      is DEPRECATED('Scalar as first positional')
+    {
+        _extract_first_by($scalar, &code, @values)
+    }
+    sub _extract_first_by($scalar, &code, @values) {
         with @values.first(&code, :k) {
             @values.splice($_,1).head
         }
@@ -236,9 +263,10 @@ So a comma is B<always> required after having specified a block.
 
 Some functions return something different in scalar context than in list
 context.  Perl 6 doesn't have those concepts.  Functions that are supposed
-to return something different in scalar context also accept a C<:scalar>
-named parameter to indicate a scalar context result is required.  This will
-be noted with the function in question if that feature is available.
+to return something different in scalar context also the C<Scalar> type as
+the first positional parameter to indicate the result like the result of a
+scalar context, is required. It will be noted with the function in question
+if that feature is available.
 
 =head1 FUNCTIONS
 
@@ -293,16 +321,16 @@ Similar to C</sort_by> but compares its key values numerically.
 
     my @optimal = max_by { KEYFUNC }, @values;
 
-    my $optimal = max_by { KEYFUNC }, @values, :scalar;
+    my $optimal = max_by Scalar, { KEYFUNC }, @values;
 
 Returns the (first) value(s) from C<@vals> that give the numerically largest
 result from the key function.
 
-    my $tallest = max_by { $_->height }, @people, :scalar;
+    my $tallest = max_by Scalar, { $_->height }, @people;
 
-    my $newest = max_by { .IO.modified }, @files, :scalar;
+    my $newest = max_by Scalar, { .IO.modified }, @files;
 
-If the C<:scalar> named parameter is specified, then only the first maximal
+If the C<Scalar> positional parameter is specified, then only the first maximal
 value is returned. Otherwise a list of all the maximal values is returned.
 This may be used to obtain positions other than the first, if order is
 significant.
@@ -322,7 +350,7 @@ name C<nmax_by> since it behaves numerically.
 
     my @optimal = min_by { KEYFUNC }, @values;
 
-    my $optimal = min_by { KEYFUNC }, @values, :scalar;
+    my $optimal = min_by Scalar, { KEYFUNC }, @values;
 
 Similar to L</max_by> but returns values which give the numerically smallest
 result from the key function. Also provided as C<nmin_by>
@@ -492,8 +520,8 @@ As with L</extract_by>, this function requires a real array and not just a
 list, and is also implemented using C<splice>.
 
 If this function fails to find a matching element, it will return an empty
-list unless called with the C<:scalar> named parameter: in that case it will
-return C<Nil>.
+list unless called with the C<Scalar> positional parameter: in that case it
+will return C<Nil>.
 
 =head2 weighted_shuffle_by BLOCK, LIST
 
@@ -528,7 +556,7 @@ and Pull Requests are welcome.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2018 Elizabeth Mattijsen
+Copyright 2018-2019 Elizabeth Mattijsen
 
 This library is free software; you can redistribute it and/or modify it under
 the Artistic License 2.0.

@@ -36,7 +36,7 @@ Perl 6 also doesn't have a single `undef` value, but instead has `Type Objects`,
 
 Also note there are no special parsing rules with regards to blocks in Perl 6. So a comma is **always** required after having specified a block.
 
-Some functions return something different in scalar context than in list context. Perl 6 doesn't have those concepts. Functions that are supposed to return something different in scalar context also accept a `:scalar` named parameter to indicate a scalar context result is required. This will be noted with the function in question if that feature is available.
+Some functions return something different in scalar context than in list context. Perl 6 doesn't have those concepts. Functions that are supposed to return something different in scalar context also the `Scalar` type as the first positional parameter to indicate the result like the result of a scalar context, is required. It will be noted with the function in question if that feature is available.
 
 FUNCTIONS
 =========
@@ -89,15 +89,15 @@ max_by BLOCK, LIST
 
     my @optimal = max_by { KEYFUNC }, @values;
 
-    my $optimal = max_by { KEYFUNC }, @values, :scalar;
+    my $optimal = max_by Scalar, { KEYFUNC }, @values;
 
 Returns the (first) value(s) from `@vals` that give the numerically largest result from the key function.
 
-    my $tallest = max_by { $_->height }, @people, :scalar;
+    my $tallest = max_by Scalar, { $_->height }, @people;
 
-    my $newest = max_by { .IO.modified }, @files, :scalar;
+    my $newest = max_by Scalar, { .IO.modified }, @files;
 
-If the `:scalar` named parameter is specified, then only the first maximal value is returned. Otherwise a list of all the maximal values is returned. This may be used to obtain positions other than the first, if order is significant.
+If the `Scalar` positional parameter is specified, then only the first maximal value is returned. Otherwise a list of all the maximal values is returned. This may be used to obtain positions other than the first, if order is significant.
 
 If called on an empty list, an empty list is returned.
 
@@ -114,7 +114,7 @@ min_by BLOCK, LIST
 
     my @optimal = min_by { KEYFUNC }, @values;
 
-    my $optimal = min_by { KEYFUNC }, @values, :scalar;
+    my $optimal = min_by Scalar, { KEYFUNC }, @values;
 
 Similar to [/max_by](/max_by) but returns values which give the numerically smallest result from the key function. Also provided as `nmin_by`
 
@@ -253,7 +253,7 @@ A hybrid between [/extract_by](/extract_by) and `List::Util::first`. Removes the
 
 As with [/extract_by](/extract_by), this function requires a real array and not just a list, and is also implemented using `splice`.
 
-If this function fails to find a matching element, it will return an empty list unless called with the `:scalar` named parameter: in that case it will return `Nil`.
+If this function fails to find a matching element, it will return an empty list unless called with the `Scalar` positional parameter: in that case it will return `Nil`.
 
 weighted_shuffle_by BLOCK, LIST
 -------------------------------
@@ -285,7 +285,7 @@ Source can be located at: https://github.com/lizmat/List-UtilsBy . Comments and 
 COPYRIGHT AND LICENSE
 =====================
 
-Copyright 2018 Elizabeth Mattijsen
+Copyright 2018-2019 Elizabeth Mattijsen
 
 This library is free software; you can redistribute it and/or modify it under the Artistic License 2.0.
 
