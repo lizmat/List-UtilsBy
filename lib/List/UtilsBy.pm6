@@ -1,14 +1,17 @@
 use v6.c;
 
-module List::UtilsBy:ver<0.0.3>:auth<cpan:ELIZABETH> {
+module List::UtilsBy:ver<0.0.4>:auth<cpan:ELIZABETH> {
     our proto sub max_by(|) is export(:all) {*}
     multi sub max_by(Scalar:U, &code, *@values) {
         _max_by(&code, @values)[0]
     }
-    multi sub max_by(&code, *@values, :$scalar)
+    multi sub max_by(&code, *@values, :$scalar!)
       is DEPRECATED('Scalar as first positional')
     {
-        $scalar ?? _max_by(&code, @values)[0] !! _max_by(&code, @values)
+        _max_by(&code, @values)[0]
+    }
+    multi sub max_by(&code, *@values) {
+        _max_by(&code, @values)
     }
     sub _max_by(&code, @values) {
         my $max = -Inf;
@@ -32,10 +35,13 @@ module List::UtilsBy:ver<0.0.3>:auth<cpan:ELIZABETH> {
     multi sub min_by(Scalar:U, &code, *@values) {
         _min_by(&code, @values)[0]
     }
-    multi sub min_by(&code, *@values, :$scalar)
+    multi sub min_by(&code, *@values, :$scalar!)
       is DEPRECATED('Scalar as first positional')
     {
-        $scalar ?? _min_by(&code, @values)[0] !! _min_by(&code, @values)
+        _min_by(&code, @values)[0]
+    }
+    multi sub min_by(&code, *@values) {
+        _min_by(&code, @values)
     }
     sub _min_by(&code, @values) {
         my $min = Inf;
@@ -168,10 +174,13 @@ module List::UtilsBy:ver<0.0.3>:auth<cpan:ELIZABETH> {
     multi sub extract_first_by(Scalar:U, &code, @values) {
         _extract_first_by(True, &code, @values)
     }
-    multi sub extract_first_by(&code, @values, :$scalar)
+    multi sub extract_first_by(&code, @values, :$scalar!)
       is DEPRECATED('Scalar as first positional')
     {
-        _extract_first_by($scalar, &code, @values)
+        _extract_first_by(True, &code, @values)
+    }
+    multi sub extract_first_by(&code, @values) {
+        _extract_first_by(False, &code, @values)
     }
     sub _extract_first_by($scalar, &code, @values) {
         with @values.first(&code, :k) {

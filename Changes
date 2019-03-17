@@ -2,6 +2,9 @@ Revision history for List-UtilsBy
 
 {{$NEXT}}
 
+0.0.4  2019-03-17T12:53:32+01:00
+    - Remove deprecation for cases where :scalar was *not* specified
+
 0.0.3  2019-03-17T12:29:00+01:00
     - Deprecate :scalar in favour of Scalar as first positional
     - Update copyright year
