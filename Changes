@@ -2,6 +2,9 @@ Revision history for List-UtilsBy
 
 {{$NEXT}}
 
+0.0.5  2019-11-10T13:33:03+01:00
+    - changed Perl 6 to Raku, and Perl 5 to Perl
+
 0.0.4  2019-03-17T12:53:32+01:00
     - Remove deprecation for cases where :scalar was *not* specified
 

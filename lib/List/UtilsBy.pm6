@@ -1,6 +1,6 @@
 use v6.c;
 
-module List::UtilsBy:ver<0.0.4>:auth<cpan:ELIZABETH> {
+module List::UtilsBy:ver<0.0.5>:auth<cpan:ELIZABETH> {
     our proto sub max_by(|) is export(:all) {*}
     multi sub max_by(Scalar:U, &code, *@values) {
         _max_by(&code, @values)[0]
@@ -227,7 +227,7 @@ sub EXPORT(*@args, *%_) {
 
 =head1 NAME
 
-List::UtilsBy - Port of Perl 5's List::UtilsBy 0.11
+List::UtilsBy - Port of Perl's List::UtilsBy 0.11
 
 =head1 SYNOPSIS
 
@@ -244,13 +244,13 @@ lists which is not going to go into C<List::Util>.
 
 =head1 Porting Caveats
 
-Perl 6 does not have the concept of C<scalar> and C<list> context.  Usually,
+Raku does not have the concept of C<scalar> and C<list> context.  Usually,
 the effect of a scalar context can be achieved by prefixing C<+> to the
 result, which would effectively return the number of elements in the result,
-which usually is the same as the scalar context of Perl 5 of these functions.
+which usually is the same as the scalar context of Perl of these functions.
 
 Many functions take a C<&code> parameter of a C<Block> to be called by the
-function.  Many of these assume B<$_> will be set.  In Perl 6, this happens
+function.  Many of these assume B<$_> will be set.  In Raku, this happens
 automagically if you create a block without a definite or implicit signature:
 
   say { $_ == 4 }.signature;   # (;; $_? is raw)
@@ -262,16 +262,16 @@ trait thus:
 
   -> $_ is copy { ... code changing $_ ... }
 
-Perl 6 also doesn't have a single C<undef> value, but instead has
+Raku also doesn't have a single C<undef> value, but instead has
 C<Type Objects>, which could be considered undef values, but with a type
 annotation.  In this module, C<Nil> (a special value denoting the absence
 of a value where there should have been one) is used instead of C<undef>.
 
-Also note there are no special parsing rules with regards to blocks in Perl 6.
+Also note there are no special parsing rules with regards to blocks in Raku.
 So a comma is B<always> required after having specified a block.
 
 Some functions return something different in scalar context than in list
-context.  Perl 6 doesn't have those concepts.  Functions that are supposed
+context.  Raku doesn't have those concepts.  Functions that are supposed
 to return something different in scalar context also the C<Scalar> type as
 the first positional parameter to indicate the result like the result of a
 scalar context, is required. It will be noted with the function in question
@@ -303,7 +303,7 @@ This sorts strings by generating sort keys which zero-pad the embedded numbers
 to some level (9 digits in this case), helping to ensure the lexical sort puts
 them in the correct order.
 
-=head3 Idiomatic Perl 6 ways
+=head3 Idiomatic Raku ways
 
     my @sorted = @people.sort: *.name;
 
@@ -311,7 +311,7 @@ them in the correct order.
 
 Similar to C</sort_by> but compares its key values numerically.
 
-=head3 Idiomatic Perl 6 ways
+=head3 Idiomatic Raku ways
 
     my @sorted = <10 1 20 42>.sort: +*;
 
@@ -349,7 +349,7 @@ If called on an empty list, an empty list is returned.
 For symmetry with the L</nsort_by> function, this is also provided under the
 name C<nmax_by> since it behaves numerically.
 
-=head3 Idiomatic Perl 6 ways
+=head3 Idiomatic Raku ways
 
     my @tallest = @people.max( *.height );       # all tallest people
 
@@ -364,7 +364,7 @@ name C<nmax_by> since it behaves numerically.
 Similar to L</max_by> but returns values which give the numerically smallest
 result from the key function. Also provided as C<nmin_by>
 
-=head3 Idiomatic Perl 6 ways
+=head3 Idiomatic Raku ways
 
     my @smallest = @people.min: *.height;       # all smallest people
 
@@ -379,7 +379,7 @@ on the same list. This version is more efficient than calling the two other
 functions individually, as it has less work to perform overall. Also provided
 as C<nminmax_by>.
 
-=head3 Idiomatic Perl 6 ways
+=head3 Idiomatic Raku ways
 
     my ($smallest,$tallest) = @people.minmax: *.height;
 
@@ -401,7 +401,7 @@ of the results is significant, don't forget to reverse the result as well:
 Because the values returned by the key function are used as hash keys, they
 ought to either be strings, or at least stringify in an identifying manner.
 
-=head3 Idiomatic Perl 6 ways
+=head3 Idiomatic Raku ways
 
     my @some_fruit = @fruit.uniq: *.colour;
 
@@ -419,7 +419,7 @@ key function, in their original order.
 Because the values returned by the key function are used as hash keys, they
 ought to either be strings, or at least stringify in an identifying manner.
 
-=head3 Idiomatic Perl 6 ways
+=head3 Idiomatic Raku ways
 
    my %balls_by_colour = @balls.classify: *.colour;
 
@@ -435,7 +435,7 @@ the key, for each value in the list.
 Because the values returned by the key function are used as hash keys, they
 ought to either be strings, or at least stringify in an identifying manner.
 
-=head3 Idiomatic Perl 6 ways
+=head3 Idiomatic Raku ways
 
     my %count_of_balls = @balls.map( *.colour ).Bag;
 
@@ -472,7 +472,7 @@ lists of keys and values:
 (A function having this behaviour is sometimes called C<zipWith>, e.g. in
 Haskell, but that name would not fit the naming scheme used by this module).
 
-=head3 Idiomatic Perl 6 ways
+=head3 Idiomatic Raku ways
 
     my @names = zip @firstnames, @surnames, :with({ "$^b, $^a" });
 
@@ -552,7 +552,7 @@ bundles of C<$number>.
 If given a list of values whose length does not evenly divide by C<$number>,
 the final call will be passed fewer elements than the others.
 
-=head3 Idiomatic Perl 6 ways
+=head3 Idiomatic Raku ways
 
     my @bundled = @values.batch(3).map: -> @_ { ... };
 
@@ -570,7 +570,7 @@ Copyright 2018-2019 Elizabeth Mattijsen
 This library is free software; you can redistribute it and/or modify it under
 the Artistic License 2.0.
 
-Re-imagined from the Perl 5 version as part of the CPAN Butterfly Plan. Perl 5
+Re-imagined from the Perl version as part of the CPAN Butterfly Plan. Perl
 version developed by Paul Evans.
 
 =end pod
