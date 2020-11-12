@@ -1,4 +1,4 @@
-use v6.c;
+use v6.*;
 use Test;
 use List::UtilsBy <bundle_by>;
 
@@ -22,4 +22,4 @@ is-deeply bundle_by( -> $a, $b { uc($b) => $a }, 2, <a b c d>),
 is-deeply bundle_by( { @_ }, 2, 1, 2, 3), ([1, 2], [3]),
   'bundle_by 2 yields short final bundle';
 
-# vim: ft=perl6 expandtab sw=4
+# vim: expandtab shiftwidth=4

@@ -1,4 +1,4 @@
-use v6.c;
+use v6.*;
 use Test;
 use List::UtilsBy <min_by nmin_by>;
 %*ENV<RAKUDO_NO_DEPRECATIONS> = True;
@@ -32,4 +32,4 @@ is-deeply min_by( &chars, <a ccc bb ddd e>), [<a e>],
 is-deeply nmin_by( Scalar, { $_ }, 10, 20), 10, 'nmin_by alias';
 is-deeply nmin_by( { $_ }, 10, 20, :scalar), 10, 'nmin_by alias';
 
-# vim: ft=perl6 expandtab sw=4
+# vim: expandtab shiftwidth=4

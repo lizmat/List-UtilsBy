@@ -1,4 +1,4 @@
-use v6.c;
+use v6.*;
 use Test;
 use List::UtilsBy <extract_first_by>;
 %*ENV<RAKUDO_NO_DEPRECATIONS> = True;
@@ -23,4 +23,4 @@ is-deeply extract_first_by( { .chars == 6 }, @words, :scalar), Nil,
   'extract first returns Nil on no match with :scalar';
 is-deeply @words, [<are some words>], 'and still leaves array unchanged';
 
-# vim: ft=perl6 expandtab sw=4
+# vim: expandtab shiftwidth=4

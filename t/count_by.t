@@ -1,4 +1,4 @@
-use v6.c;
+use v6.*;
 use Test;
 use List::UtilsBy <count_by>;
 
@@ -23,4 +23,4 @@ is-deeply count_by( &chars, <a b cc dd eee>).sort(*.key),
   ("1" => 2, "2" => 2, "3" => 1),
   'chars function';
 
-# vim: ft=perl6 expandtab sw=4
+# vim: expandtab shiftwidth=4

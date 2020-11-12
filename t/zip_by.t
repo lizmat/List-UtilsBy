@@ -1,4 +1,4 @@
-use v6.c;
+use v6.*;
 use Test;
 use List::UtilsBy <zip_by>;
 
@@ -24,4 +24,4 @@ is-deeply zip_by( { |@_ }, [<one two three>], [1,2,3] ),
   ["one",1, "two",2, "three",3],
   'itemfunc can return lists';
 
-# vim: ft=perl6 expandtab sw=4
+# vim: expandtab shiftwidth=4

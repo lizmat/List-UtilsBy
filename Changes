@@ -2,6 +2,11 @@ Revision history for List-UtilsBy
 
 {{$NEXT}}
 
+0.0.6  2020-11-12T18:33:20+01:00
+    - Change name of distribution
+    - Force to highest possible Raku version
+    - Update copyright year
+
 0.0.5  2019-11-10T13:33:03+01:00
     - changed Perl 6 to Raku, and Perl 5 to Perl
 

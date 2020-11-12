@@ -1,7 +1,7 @@
 NAME
 ====
 
-List::UtilsBy - Port of Perl's List::UtilsBy 0.11
+Raku port of Perl's List::UtilsBy module 0.11
 
 SYNOPSIS
 ========
@@ -14,6 +14,8 @@ SYNOPSIS
 
 DESCRIPTION
 ===========
+
+This module tries to mimic the behaviour of Perl's `List::UtilsBy` module as closely as possible in the Raku Programming Language.
 
 List::UtilsBy provides some trivial but commonly needed functionality on lists which is not going to go into `List::Util`.
 
@@ -283,7 +285,7 @@ Source can be located at: https://github.com/lizmat/List-UtilsBy . Comments and 
 COPYRIGHT AND LICENSE
 =====================
 
-Copyright 2018-2019 Elizabeth Mattijsen
+Copyright 2018-2020 Elizabeth Mattijsen
 
 This library is free software; you can redistribute it and/or modify it under the Artistic License 2.0.
 

@@ -1,4 +1,4 @@
-use v6.c;
+use v6.*;
 use Test;
 use List::UtilsBy <unzip_by>;
 
@@ -18,4 +18,4 @@ is-deeply unzip_by( { .comb }, "a1","b2","c3"), [ ["a","b","c"],["1","2","3"] ],
 is-deeply unzip_by( { .comb }, "a","b2","c"), [ ["a","b","c"],[Any,"2"] ],
   'for each char but uneven';
 
-# vim: ft=perl6 expandtab sw=4
+# vim: expandtab shiftwidth=4

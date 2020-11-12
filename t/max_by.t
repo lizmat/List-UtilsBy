@@ -1,4 +1,4 @@
-use v6.c;
+use v6.*;
 use Test;
 use List::UtilsBy <max_by nmax_by>;
 %*ENV<RAKUDO_NO_DEPRECATIONS> = True;
@@ -32,4 +32,4 @@ is-deeply max_by( &chars, <a ccc bb ddd>), [<ccc ddd>],
 is-deeply nmax_by( Scalar, { $_ }, 10, 20), 20, 'nmax_by alias';
 is-deeply nmax_by( { $_ }, 10, 20, :scalar), 20, 'nmax_by alias';
 
-# vim: ft=perl6 expandtab sw=4
+# vim: expandtab shiftwidth=4

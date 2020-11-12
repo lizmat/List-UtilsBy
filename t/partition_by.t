@@ -1,4 +1,4 @@
-use v6.c;
+use v6.*;
 use Test;
 use List::UtilsBy <partition_by>;
 
@@ -25,4 +25,4 @@ is-deeply partition_by( &chars, <a b cc dd eee>).sort(*.key),
   ("1" => [<a b>], "2" => [<cc dd>], "3" => ["eee"]),
   'chars function';
 
-# vim: ft=perl6 expandtab sw=4
+# vim: expandtab shiftwidth=4

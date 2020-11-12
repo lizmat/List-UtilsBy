@@ -1,4 +1,4 @@
-use v6.c;
+use v6.*;
 use Test;
 use List::UtilsBy <extract_by>;
 
@@ -21,4 +21,4 @@ is-deeply extract_by( { True }, @numbers), [5,7,8,10],
   'extract true returns all';
 is-deeply @numbers, [], 'extract true leaves nothing';
 
-# vim: ft=perl6 expandtab sw=4
+# vim: expandtab shiftwidth=4

@@ -1,4 +1,4 @@
-use v6.c;
+use v6.*;
 use Test;
 use List::UtilsBy <sort_by rev_sort_by>;
 
@@ -24,4 +24,4 @@ is-deeply sort_by( *.flip, "az", "by"), <by az>, 'flip function';
 is-deeply rev_sort_by( { $_ }, "b", "a"), <b a>,
   'reverse sort identity function on $_';
 
-# vim: ft=perl6 expandtab sw=4
+# vim: expandtab shiftwidth=4

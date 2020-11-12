@@ -1,4 +1,4 @@
-use v6.c;
+use v6.*;
 use Test;
 use List::UtilsBy <nsort_by rev_nsort_by>;
 
@@ -27,4 +27,4 @@ is-deeply nsort_by( +*.comb("a"), <apple hello armageddon>),
 is-deeply rev_nsort_by( *.chars, <a bbb cc>), <bbb cc a>,
   'reverse chars function';
 
-# vim: ft=perl6 expandtab sw=4
+# vim: expandtab shiftwidth=4

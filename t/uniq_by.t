@@ -1,4 +1,4 @@
-use v6.c;
+use v6.*;
 use Test;
 use List::UtilsBy <uniq_by>;
 
@@ -19,4 +19,4 @@ is-deeply uniq_by( { $_[0] }, "b", "a"), <b a>, 'identity function on $_[0]' ;
 
 is-deeply uniq_by( &chars, <a b cc dd eee>), <a cc eee>, 'chars function';
 
-# vim: ft=perl6 expandtab sw=4
+# vim: expandtab shiftwidth=4

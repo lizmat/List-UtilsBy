@@ -1,6 +1,6 @@
-use v6.c;
+use v6.*;
 
-module List::UtilsBy:ver<0.0.5>:auth<cpan:ELIZABETH> {
+module List::UtilsBy:ver<0.0.6>:auth<cpan:ELIZABETH> {
     our proto sub max_by(|) is export(:all) {*}
     multi sub max_by(Scalar:U, &code, *@values) {
         _max_by(&code, @values)[0]
@@ -227,7 +227,7 @@ sub EXPORT(*@args, *%_) {
 
 =head1 NAME
 
-List::UtilsBy - Port of Perl's List::UtilsBy 0.11
+Raku port of Perl's List::UtilsBy module 0.11
 
 =head1 SYNOPSIS
 
@@ -238,6 +238,9 @@ List::UtilsBy - Port of Perl's List::UtilsBy 0.11
     my $shortest_name = min_by { .chars }, @names;
 
 =head1 DESCRIPTION
+
+This module tries to mimic the behaviour of Perl's C<List::UtilsBy> module
+as closely as possible in the Raku Programming Language.
 
 List::UtilsBy provides some trivial but commonly needed functionality on
 lists which is not going to go into C<List::Util>.
@@ -565,7 +568,7 @@ and Pull Requests are welcome.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2018-2019 Elizabeth Mattijsen
+Copyright 2018-2020 Elizabeth Mattijsen
 
 This library is free software; you can redistribute it and/or modify it under
 the Artistic License 2.0.
@@ -575,4 +578,4 @@ version developed by Paul Evans.
 
 =end pod
 
-# vim: ft=perl6 expandtab sw=4
+# vim: expandtab shiftwidth=4
