@@ -1,5 +1,5 @@
 {
-  "auth": "cpan:ELIZABETH",
+  "auth": "zef:lizmat",
   "authors": [
     "Elizabeth Mattijsen"
   ],
@@ -12,7 +12,7 @@
   "name": "List::UtilsBy",
   "perl": "6.c",
   "provides": {
-    "List::UtilsBy": "lib/List/UtilsBy.pm6"
+    "List::UtilsBy": "lib/List/UtilsBy.rakumod"
   },
   "resources": [
   ],
@@ -23,5 +23,5 @@
   ],
   "test-depends": [
   ],
-  "version": "0.0.6"
+  "version": "0.0.7"
 }

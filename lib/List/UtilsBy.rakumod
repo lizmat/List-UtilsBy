@@ -1,6 +1,6 @@
 use v6.*;
 
-module List::UtilsBy:ver<0.0.6>:auth<cpan:ELIZABETH> {
+module List::UtilsBy:ver<0.0.7>:auth<zef:lizmat> {
     our proto sub max_by(|) is export(:all) {*}
     multi sub max_by(Scalar:U, &code, *@values) {
         _max_by(&code, @values)[0]
@@ -561,14 +561,14 @@ the final call will be passed fewer elements than the others.
 
 =head1 AUTHOR
 
-Elizabeth Mattijsen <liz@wenzperl.nl>
+Elizabeth Mattijsen <liz@raku.rocks>
 
 Source can be located at: https://github.com/lizmat/List-UtilsBy . Comments
 and Pull Requests are welcome.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2018-2020 Elizabeth Mattijsen
+Copyright 2018, 2019, 2020, 2021 Elizabeth Mattijsen
 
 This library is free software; you can redistribute it and/or modify it under
 the Artistic License 2.0.
